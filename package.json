@@ -11,6 +11,7 @@
   "dependencies": {
     "@iconify/react": "4.1.1",
     "@tabler/icons-react": "3.5.0",
+    "@uploadthing/react": "^7.1.5",
     "firebase": "^11.1.0",
     "flowbite": "2.3.0",
     "flowbite-react": "0.10.1",
@@ -23,7 +24,7 @@
     "sharp": "0.32.6",
     "simplebar-react": "3.2.5",
     "sweetalert2": "^11.6.13",
-    "zod": "^3.24.1"
+    "uploadthing": "^7.4.4"
   },
   "devDependencies": {
     "@types/node": "20",

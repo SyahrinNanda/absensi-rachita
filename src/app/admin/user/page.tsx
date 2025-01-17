@@ -1,41 +1,60 @@
 "use client";
 // "use server";
 import React, { useCallback, useEffect, useState } from "react";
-import { HiOutlineDotsVertical } from "react-icons/hi";
 import { Icon } from "@iconify/react";
 
 import {
-  Dropdown,
   Table,
   Modal,
   Label,
   TextInput,
   Select,
+  Dropdown,
 } from "flowbite-react";
 
-import { DataAction, DataUser } from "./types";
+import { DataUser } from "./types";
 
 import { db } from "@/app/lib/firebase";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
 
 import Swal from "sweetalert2";
 import Image from "next/image";
+import { HiOutlineDotsVertical } from "react-icons/hi";
 
 export default function Page() {
   // creating Database Reference
   const dbref = collection(db, "users");
 
-  //kode modal
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  //kode modal Add
+  const [isOpenAdd, setIsOpenAdd] = useState<boolean>(false);
 
-  const openModal = () => setIsOpen(true);
-  const closeModal = () => {
+  const openModalAdd = () => setIsOpenAdd(true);
+  const closeModalAdd = () => {
     setName("");
     setEmail("");
     setPass("");
     setRole("");
     setImg(null);
-    setIsOpen(false);
+    setIsOpenAdd(false);
+  };
+
+  //kode modal Delete
+  const [isOpenDelete, setIsOpenDelete] = useState<boolean>(false);
+  const [deleteId, setDeleteId] = useState<any | null>(null);
+
+  const openModalDelete = (id: any) => {
+    setDeleteId(id);
+    setIsOpenDelete(true);
+  };
+  const closeModalDelete = () => {
+    setDeleteId(null);
+    setIsOpenDelete(false);
   };
 
   // handling user input
@@ -71,7 +90,7 @@ export default function Page() {
         icon: "success",
         draggable: true,
       });
-      closeModal();
+      closeModalAdd();
     } catch (error) {
       Swal.fire({
         title: "Gagal Ditambahkan!",
@@ -102,29 +121,25 @@ export default function Page() {
     fetchdata();
   }, [fetchdata]);
 
+  const deleteUser = async () => {
+    const delref = doc(dbref, deleteId);
+    const delDoc = await deleteDoc(delref);
+
+    Swal.fire({
+      title: "Berhasi Dihapus!",
+      icon: "success",
+      draggable: true,
+    });
+
+    fetchdata();
+    closeModalDelete();
+  };
+
   // password sensor=============
   const maskPassword = (password: any | null) => {
     if (!password) return "********";
     return password.replace(/./g, "*"); // Sensor password dengan '*'
   };
-
-  const tableActionData: DataAction[] = [
-    {
-      icon: "solar:pen-new-square-broken",
-      listtitle: "Edit",
-      color: "#6dd4f7",
-    },
-    {
-      icon: "solar:trash-bin-minimalistic-outline",
-      listtitle: "Hapus",
-      color: "#f7866d",
-    },
-    {
-      icon: "solar:restart-circle-broken",
-      listtitle: "Reset",
-      color: "#6df78d",
-    },
-  ];
 
   return (
     <>
@@ -135,7 +150,7 @@ export default function Page() {
         <div className="p-6">
           <div className="mt-2">
             <button
-              onClick={openModal}
+              onClick={openModalAdd}
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 rounded-full flex justify-center items-center"
             >
               <Icon
@@ -147,7 +162,7 @@ export default function Page() {
               Tambah User
             </button>
 
-            <Modal show={isOpen} size="xl" onClose={closeModal}>
+            <Modal show={isOpenAdd} size="xl" onClose={closeModalAdd}>
               <Modal.Header>Tambah User</Modal.Header>
               <form onSubmit={addUser} encType="multipart/form-data">
                 <Modal.Body>
@@ -260,7 +275,7 @@ export default function Page() {
                 <Modal.Footer className="flex justify-center items-center">
                   <button
                     type="button"
-                    onClick={closeModal}
+                    onClick={closeModalAdd}
                     className="px-6 py-2 text-white bg-red-500 rounded-md hover:bg-gray-300"
                   >
                     Batal
@@ -275,7 +290,6 @@ export default function Page() {
                 </Modal.Footer>
               </form>
             </Modal>
-
             <hr className="mt-4" />
             <div className="overflow-x-auto">
               <Table hoverable>
@@ -286,7 +300,7 @@ export default function Page() {
                   <Table.HeadCell>Email</Table.HeadCell>
                   <Table.HeadCell>Password</Table.HeadCell>
                   <Table.HeadCell>Role</Table.HeadCell>
-                  <Table.HeadCell></Table.HeadCell>
+                  <Table.HeadCell>Action</Table.HeadCell>
                 </Table.Head>
                 <Table.Body className="divide-y divide-border dark:divide-darkborder ">
                   {fetchData.map((item: DataUser, index) => (
@@ -342,23 +356,68 @@ export default function Page() {
                             </span>
                           )}
                         >
-                          {tableActionData.map((items, index) => (
-                            <Dropdown.Item key={index} className="flex gap-3">
-                              {" "}
-                              <Icon
-                                icon={`${items.icon}`}
-                                color={`${items.color}`}
-                                height={18}
-                              />
-                              <span>{items.listtitle}</span>
-                            </Dropdown.Item>
-                          ))}
+                          <Dropdown.Item key={index} className="flex gap-3">
+                            {" "}
+                            <Icon
+                              icon="solar:pen-new-square-broken"
+                              color="#6dd4f7"
+                              height={18}
+                            />
+                            <span>Edit</span>
+                          </Dropdown.Item>
+                          <Dropdown.Item
+                            key={index}
+                            className="flex gap-3"
+                            onClick={() => openModalDelete(item.id)}
+                          >
+                            <Icon
+                              icon="solar:trash-bin-minimalistic-outline"
+                              color="#f7866d"
+                              height={18}
+                            />
+                            <span>Hapus</span>
+                          </Dropdown.Item>
+                          <Dropdown.Item key={index} className="flex gap-3">
+                            {" "}
+                            <Icon
+                              icon="solar:restart-circle-broken"
+                              color="#6df78d"
+                              height={18}
+                            />
+                            <span>Reset</span>
+                          </Dropdown.Item>
                         </Dropdown>
                       </Table.Cell>
                     </Table.Row>
                   ))}
                 </Table.Body>
               </Table>
+
+              <Modal show={isOpenDelete} size="md" onClose={closeModalDelete}>
+                <Modal.Header>Hapus User</Modal.Header>
+
+                <Modal.Body>
+                  <div className="flex justify-center items-center">
+                    Anda yakin ingin hapus?
+                  </div>
+                </Modal.Body>
+                <Modal.Footer className="flex justify-center items-center">
+                  <button
+                    type="button"
+                    onClick={closeModalDelete}
+                    className="px-6 py-2 text-white bg-red-500 rounded-md hover:bg-gray-300"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="button"
+                    onClick={deleteUser}
+                    className="px-6 py-2 text-white bg-blue-500 rounded-md hover:bg-gray-300"
+                  >
+                    Ya
+                  </button>
+                </Modal.Footer>
+              </Modal>
             </div>
           </div>
         </div>
