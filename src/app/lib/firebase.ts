@@ -5,13 +5,13 @@ import { getDatabase } from "firebase/database";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDpyh9TQug5wiQXmZYRyeom3ETb5QBxP5k",
-  authDomain: "absensi-rachita.firebaseapp.com",
-  projectId: "absensi-rachita",
-  storageBucket: "absensi-rachita.firebasestorage.app",
-  messagingSenderId: "1046624806841",
-  appId: "1:1046624806841:web:7bf6209076cd0c876e3868",
-  measurementId: "G-HG18LM08WF",
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID,
+  measurementId: process.env.FIREBASE_MEASUREMENT_ID,
 };
 
 // Pastikan hanya ada satu instance Firebase App
