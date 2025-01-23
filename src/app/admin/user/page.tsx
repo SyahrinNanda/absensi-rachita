@@ -47,14 +47,51 @@ export default function Page() {
   //kode modal Delete
   const [isOpenDelete, setIsOpenDelete] = useState<boolean>(false);
   const [deleteId, setDeleteId] = useState<any | null>(null);
+  const [deleteProfile, setDeleteProfile] = useState<any | null>(null);
 
-  const openModalDelete = (id: any) => {
+  // kode delete data
+  const deleteImage = async (imageName: string) => {
+    try {
+      const response = await fetch("/api/deleteProfile", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ imageName }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to delete image");
+      }
+    } catch (error: any) {
+      console.error("Error deleting image:", error.message);
+    }
+  };
+
+  const openModalDelete = (id: any, imageName: any) => {
     setDeleteId(id);
+    setDeleteProfile(imageName);
     setIsOpenDelete(true);
   };
   const closeModalDelete = () => {
     setDeleteId(null);
     setIsOpenDelete(false);
+  };
+
+  const deleteUser = async () => {
+    const delref = doc(dbref, deleteId);
+    const delDoc = await deleteDoc(delref);
+    deleteImage(deleteProfile);
+
+    Swal.fire({
+      title: "Berhasi Dihapus!",
+      icon: "success",
+      draggable: true,
+    });
+
+    fetchdata();
+    closeModalDelete();
   };
 
   // handling user input
@@ -166,20 +203,6 @@ export default function Page() {
   useEffect(() => {
     fetchdata();
   }, [fetchdata]);
-
-  const deleteUser = async () => {
-    const delref = doc(dbref, deleteId);
-    const delDoc = await deleteDoc(delref);
-
-    Swal.fire({
-      title: "Berhasi Dihapus!",
-      icon: "success",
-      draggable: true,
-    });
-
-    fetchdata();
-    closeModalDelete();
-  };
 
   //kode modal Edit
   const [isOpenEdit, setIsOpenEdit] = useState<boolean>(false);
@@ -520,7 +543,7 @@ export default function Page() {
                           <Dropdown.Item
                             key={`${item.id}-delete`}
                             className="flex gap-3"
-                            onClick={() => openModalDelete(item.id)}
+                            onClick={() => openModalDelete(item.id, item.image)}
                           >
                             <Icon
                               icon="solar:trash-bin-minimalistic-outline"
