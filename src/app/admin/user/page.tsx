@@ -82,13 +82,21 @@ export default function Page() {
   const deleteUser = async () => {
     const delref = doc(dbref, deleteId);
     const delDoc = await deleteDoc(delref);
-    deleteImage(deleteProfile);
+    if (deleteProfile === "default.jpg") {
+      Swal.fire({
+        title: "Berhasi Dihapus!",
+        icon: "success",
+        draggable: true,
+      });
+    } else {
+      deleteImage(deleteProfile);
 
-    Swal.fire({
-      title: "Berhasi Dihapus!",
-      icon: "success",
-      draggable: true,
-    });
+      Swal.fire({
+        title: "Berhasi Dihapus!",
+        icon: "success",
+        draggable: true,
+      });
+    }
 
     fetchdata();
     closeModalDelete();
@@ -207,8 +215,9 @@ export default function Page() {
   //kode modal Edit
   const [isOpenEdit, setIsOpenEdit] = useState<boolean>(false);
 
-  const openModalEdit = (id: any) => {
+  const openModalEdit = (id: any, imageName: any) => {
     setIsOpenEdit(true);
+    setDeleteProfile(imageName);
 
     // Cari data berdasarkan id
     const filter: any = fetchData.find((item: any) => item.id === id);
@@ -238,69 +247,61 @@ export default function Page() {
   const editUser = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Mencegah refresh halaman
 
-    // let image: string = typeof img === "string" ? img : img ? img.name : "";
-    const formData: any = new FormData();
-    formData.append("file", img);
-
     const updateRef = doc(dbref, id);
+    const formData = new FormData();
+
+    // Hanya tambahkan file jika ada gambar baru
+    if (img && typeof img !== "string") {
+      formData.append("file", img);
+    }
+
     try {
-      const response = await fetch("/api/uploadProfile", {
-        method: "POST",
-        body: formData,
-      });
-      if (typeof img === "string") {
-        const image: string = img;
-        await updateDoc(updateRef, {
-          email: email,
-          fullName: name,
-          image: image,
-          password: pass,
-          role: role,
+      let image = ""; // Default nilai image kosong
+      if (img && typeof img !== "string") {
+        // Jika ada file baru, unggah ke server
+
+        const response = await fetch("/api/uploadProfile", {
+          method: "POST",
+          body: formData,
         });
-        fetchdata();
-        Swal.fire({
-          title: "Berhasil Diedit!",
-          icon: "success",
-          draggable: true,
-        });
-        closeModalEdit();
-      } else if (img && response.ok) {
+
+        if (!response.ok) {
+          throw new Error("Failed to upload image");
+        }
+        if (deleteProfile != "default.jpg") {
+          deleteImage(deleteProfile);
+        }
         const data = await response.json();
-        const image: string = data.namefile;
-        await updateDoc(updateRef, {
-          email: email,
-          fullName: name,
-          image: image,
-          password: pass,
-          role: role,
-        });
-        fetchdata();
-        Swal.fire({
-          title: "Berhasil Diedit!",
-          icon: "success",
-          draggable: true,
-        });
-        closeModalEdit();
-      } else {
-        const image: string = "";
-        await updateDoc(updateRef, {
-          email: email,
-          fullName: name,
-          image: image,
-          password: pass,
-          role: role,
-        });
-        fetchdata();
-        Swal.fire({
-          title: "Berhasil Diedit!",
-          icon: "success",
-          draggable: true,
-        });
-        closeModalEdit();
+        image = data.namefile; // Ambil nama file yang diunggah
+      } else if (typeof img === "string") {
+        // Jika `img` adalah string (menggunakan gambar lama)
+        image = img;
       }
-    } catch (error) {
+
+      // Update data di Firestore
+      await updateDoc(updateRef, {
+        email,
+        fullName: name,
+        image,
+        password: pass,
+        role,
+      });
+
+      // Panggil ulang data setelah berhasil di-update
+      fetchdata();
+
       Swal.fire({
-        title: `Gagal Diedit!`,
+        title: "Berhasil Diedit!",
+        icon: "success",
+        draggable: true,
+      });
+
+      closeModalEdit();
+    } catch (error) {
+      console.error("Error editing user:", error);
+
+      Swal.fire({
+        title: "Gagal Diedit!",
         icon: "error",
         draggable: true,
       });
@@ -529,7 +530,7 @@ export default function Page() {
                           )}
                         >
                           <Dropdown.Item
-                            onClick={() => openModalEdit(item.id)}
+                            onClick={() => openModalEdit(item.id, item.image)}
                             key={`${item.id}-edit`}
                             className="flex gap-3"
                           >
