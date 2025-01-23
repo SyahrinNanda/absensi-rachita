@@ -154,35 +154,26 @@ export default function Page() {
         body: formData,
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        const image: string = data.namefile;
-        await addDoc(dbref, {
-          email: email,
-          fullName: name,
-          image: image,
-          // image: img,
-          password: pass,
-          role: role,
-        });
-      } else {
-        const image: string = "";
-        await addDoc(dbref, {
-          email: email,
-          fullName: name,
-          image: image,
-          // image: img,
-          password: pass,
-          role: role,
-        });
-      }
+      const image = response.ok ? (await response.json()).namefile : "";
+
+      // Memasukkan data user ke dalam Firestore
+      await addDoc(dbref, {
+        email,
+        fullName: name,
+        image,
+        password: pass,
+        role,
+      });
+
       Swal.fire({
         title: "Berhasi Ditambahkan!",
         icon: "success",
         draggable: true,
       });
+
       closeModalAdd();
     } catch (error) {
+      console.error("Error adding user:", error);
       Swal.fire({
         title: "Gagal Ditambahkan!",
         icon: "error",
