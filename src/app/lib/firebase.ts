@@ -47,15 +47,38 @@ if (typeof window !== "undefined") {
 export const FirebaseAuth = getAuth();
 
 export const SignUp = async (email: string, password: string) => {
-  await createUserWithEmailAndPassword(FirebaseAuth, email, password);
+  try {
+    const userCredential = await createUserWithEmailAndPassword(
+      FirebaseAuth,
+      email,
+      password
+    );
+    return userCredential.user;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
 };
 
 export const SignIn = async (email: string, password: string) => {
-  await signInWithEmailAndPassword(FirebaseAuth, email, password);
+  try {
+    const userCredential = await signInWithEmailAndPassword(
+      FirebaseAuth,
+      email,
+      password
+    );
+    return userCredential.user;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
 };
 
 export const SignOut = async () => {
-  await signOut(FirebaseAuth);
+  try {
+    await signOut(FirebaseAuth);
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+  0;
 };
 
 export default app;
