@@ -3,6 +3,12 @@ import { getAnalytics, isSupported } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
 import { getDatabase } from "firebase/database";
 import { getStorage } from "firebase/storage";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -36,5 +42,20 @@ if (typeof window !== "undefined") {
     }
   });
 }
+
+//Create Autentication Firebase
+export const FirebaseAuth = getAuth();
+
+export const SignUp = async (email: string, password: string) => {
+  await createUserWithEmailAndPassword(FirebaseAuth, email, password);
+};
+
+export const SignIn = async (email: string, password: string) => {
+  await signInWithEmailAndPassword(FirebaseAuth, email, password);
+};
+
+export const SignOut = async () => {
+  await signOut(FirebaseAuth);
+};
 
 export default app;

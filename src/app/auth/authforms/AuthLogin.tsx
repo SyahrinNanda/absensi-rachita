@@ -1,4 +1,4 @@
-import { Button, Checkbox, Label, TextInput } from "flowbite-react";
+import { Button, Label, TextInput } from "flowbite-react";
 import Link from "next/link";
 import React from "react";
 
@@ -8,11 +8,11 @@ const AuthLogin = () => {
       <form>
         <div className="mb-4">
           <div className="mb-2 block">
-            <Label htmlFor="Username" value="Username" />
+            <Label htmlFor="email" value="Email Address" />
           </div>
           <TextInput
-            id="username"
-            type="text"
+            id="email"
+            type="email"
             sizing="md"
             className="form-control"
           />
@@ -29,8 +29,8 @@ const AuthLogin = () => {
           />
         </div>
 
-        <Button color={"primary"} href="/" as={Link} className="w-full">
-          Sign in
+        <Button color={"primary"} href="#" as={Link} className="w-full">
+          Sign In
         </Button>
       </form>
     </>

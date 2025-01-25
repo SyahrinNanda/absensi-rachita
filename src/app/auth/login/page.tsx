@@ -17,6 +17,7 @@ const BoxedLogin = () => {
               <div className="mx-auto">
                 <Logo />
               </div>
+              <h3 className="mx-auto text-2xl font-bold my-3">Sign In</h3>
               <AuthLogin />
               <div className="flex gap-2 text-base text-ld font-medium mt-6 items-center justify-center">
                 <p>Don&apos;t have an Account?</p>

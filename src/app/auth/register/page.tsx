@@ -18,9 +18,7 @@ const BoxedRegister = () => {
               <div className="mx-auto">
                 <Logo />
               </div>
-              <p className="text-sm text-center text-dark my-3">
-                Your Social Campaigns
-              </p>
+              <h3 className="mx-auto text-2xl font-bold my-3">Sign Up</h3>
               <AuthRegister />
               <div className="flex gap-2 text-base text-ld font-medium mt-6 items-center justify-center">
                 <p>Already have an Account?</p>
