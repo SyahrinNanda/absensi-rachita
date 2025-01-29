@@ -1,9 +1,32 @@
+"use client";
+
 import { Button, Dropdown } from "flowbite-react";
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Icon } from "@iconify/react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { SignOut } from "@/app/lib/firebase";
+
 const Profile = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    setIsLoading(true);
+    try {
+      await SignOut();
+      // Redirect to home page or login page after successful sign out
+      router.push("/auth/login");
+    } catch (error) {
+      console.error("Failed to sign out:", error);
+      // Optionally, you can show an error message to the user here
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="relative group/menu">
       <Dropdown
@@ -32,12 +55,14 @@ const Profile = () => {
         </Dropdown.Item>
         <div className="p-3 pt-0">
           <Button
-            as={Link}
+            onClick={handleSignOut}
+            disabled={isLoading}
+            // as={Link}
             size={"sm"}
             href="/auth/login"
             className="mt-2 border border-primary text-primary bg-transparent hover:bg-lightprimary outline-none focus:outline-none"
           >
-            Logout
+            {isLoading ? "Signing Out..." : "Sign Out"}
           </Button>
         </div>
       </Dropdown>

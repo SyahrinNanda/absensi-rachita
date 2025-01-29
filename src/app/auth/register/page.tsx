@@ -1,6 +1,5 @@
 import Logo from "@/app/(DashboardLayout)/layout/shared/logo/Logo";
 import React from "react";
-import Link from "next/link";
 import type { Metadata } from "next";
 import AuthRegister from "../authforms/AuthRegister";
 export const metadata: Metadata = {
@@ -18,17 +17,7 @@ const BoxedRegister = () => {
               <div className="mx-auto">
                 <Logo />
               </div>
-              <h3 className="mx-auto text-2xl font-bold my-3">Sign Up</h3>
               <AuthRegister />
-              <div className="flex gap-2 text-base text-ld font-medium mt-6 items-center justify-center">
-                <p>Already have an Account?</p>
-                <Link
-                  href={"/auth/login"}
-                  className="text-primary text-sm font-medium"
-                >
-                  Sign in
-                </Link>
-              </div>
             </div>
           </div>
         </div>

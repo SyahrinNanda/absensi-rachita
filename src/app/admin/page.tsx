@@ -39,7 +39,7 @@ const page = () => {
             <Link
               href="https://wrappixel.com"
               target="_blank"
-              className="pl-1 text-primary underline decoration-primary" 
+              className="pl-1 text-primary underline decoration-primary"
             >
               wrappixel.com
             </Link>

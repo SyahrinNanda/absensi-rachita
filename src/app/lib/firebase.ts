@@ -8,6 +8,10 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
+  sendEmailVerification,
+  onAuthStateChanged,
+  applyActionCode,
+  type User,
 } from "firebase/auth";
 
 const firebaseConfig = {
@@ -20,30 +24,30 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-// Pastikan hanya ada satu instance Firebase App
+// Ensure only one Firebase App instance
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-// Inisialisasi Firestore
+// Initialize Firestore
 export const db = getFirestore(app);
 
-// Inisialisasi Realtime Database
+// Initialize Realtime Database
 export const rtdb = getDatabase(app);
 
 // Firebase Storage Instance
 export const storage = getStorage(app);
 
-// Inisialisasi Analytics hanya di browser
+// Initialize Analytics only in browser
 if (typeof window !== "undefined") {
   isSupported().then((supported) => {
     if (supported) {
       getAnalytics(app);
     } else {
-      console.warn("Firebase Analytics tidak didukung di lingkungan ini.");
+      console.warn("Firebase Analytics is not supported in this environment.");
     }
   });
 }
 
-//Create Autentication Firebase
+// Create Firebase Authentication
 export const FirebaseAuth = getAuth();
 
 export const SignUp = async (email: string, password: string) => {
@@ -53,6 +57,7 @@ export const SignUp = async (email: string, password: string) => {
       email,
       password
     );
+    await sendEmailVerification(userCredential.user);
     return userCredential.user;
   } catch (error: any) {
     throw new Error(error.message);
@@ -78,7 +83,27 @@ export const SignOut = async () => {
   } catch (error: any) {
     throw new Error(error.message);
   }
-  0;
+};
+
+export const sendVerificationEmail = async (user: User) => {
+  try {
+    await sendEmailVerification(user);
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+};
+
+export const onAuthStateChange = (callback: (user: User | null) => void) => {
+  return onAuthStateChanged(FirebaseAuth, callback);
+};
+
+export const verifyEmail = async (actionCode: string) => {
+  try {
+    await applyActionCode(FirebaseAuth, actionCode);
+    return true;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
 };
 
 export default app;
