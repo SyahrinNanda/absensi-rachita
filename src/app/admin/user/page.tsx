@@ -1,5 +1,6 @@
 "use client";
-import React, { useCallback, useEffect, useState } from "react";
+import type React from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Icon } from "@iconify/react";
 
 import {
@@ -11,7 +12,7 @@ import {
   Dropdown,
 } from "flowbite-react";
 
-import { DataUser } from "./types";
+import type { DataUser } from "./types";
 
 import { db } from "@/app/lib/firebase";
 import {
@@ -165,8 +166,10 @@ export default function Page() {
         role,
       });
 
+      fetchdata(); // Add this line to refresh the data
+
       Swal.fire({
-        title: "Berhasi Ditambahkan!",
+        title: "Berhasil Ditambahkan!",
         icon: "success",
         draggable: true,
       });
@@ -188,7 +191,7 @@ export default function Page() {
   // Definisikan fetchdata dengan useCallback
   const fetchdata = useCallback(async () => {
     try {
-      const getData = await getDocs(dbref);
+      const getData = await getDocs(collection(db, "users"));
       const snap: any = getData.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
@@ -197,7 +200,7 @@ export default function Page() {
     } catch (error) {
       console.error("Error fetching data: ", error);
     }
-  }, [dbref]);
+  }, []);
 
   useEffect(() => {
     fetchdata();
@@ -278,8 +281,9 @@ export default function Page() {
         role,
       });
 
+      fetchdata(); // Add this line to refresh the data
+
       // Panggil ulang data setelah berhasil di-update
-      fetchdata();
 
       Swal.fire({
         title: "Berhasil Diedit!",
