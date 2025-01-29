@@ -109,6 +109,14 @@ const AuthRegister = () => {
             ? `Resend in ${cooldown}s`
             : "Resend Verification Email"}
         </Button>
+        {/* Back to Sign in Button */}
+        <div className="mt-4">
+          <Link href="/auth/login">
+            <Button color="gray" className="w-full">
+              Back to Sign in
+            </Button>
+          </Link>
+        </div>
       </div>
     );
   }
